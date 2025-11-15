@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@layer utilities {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    @apply appearance-none;
+  }
+}
+
+@layer base {
+  :root {
+    @apply text-[rgba(255,255,255,0.87)] bg-[#242424] font-sans;
+  }
+
+  body {
+    @apply min-w-[320px] min-h-screen relative m-0;
+  }
+}
