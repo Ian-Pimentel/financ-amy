@@ -1,23 +1,63 @@
 import type { Expense } from "@/types"
-import { getDate } from "@/utils"
-import { useState, type ChangeEvent } from "react"
+import { clamp, daysInMonth, getDate } from "@/utils"
+import { useState, type SetStateAction } from "react"
+import TrashBin from "./trash_bin";
 
 type MonthProps = {
     month: string;
     expenses: Expense[];
-    handleCellChange: (id: number, prop: keyof Expense, event: ChangeEvent<HTMLInputElement>) => void;
-    addExpense: (expense?: Partial<Expense>) => void;
+    setExpenses: React.Dispatch<SetStateAction<Expense[]>>;
 };
 
-export default function MonthComponent({ month, expenses, handleCellChange, addExpense }: MonthProps) {
+export default function MonthComponent({ month, expenses, setExpenses }: MonthProps) {
     const [open, setOpen] = useState(false);
 
     const expensesTotal = expenses/*.filter(exp => exp.paid)*/.map(exp => exp.value).reduce((prev, curr) => {
         return prev + curr;
     }, 0);
 
+    const getExpense = (id: number) => {
+        return { ...expenses.find(expense => expense.id === id) }
+    };
+
+    const addExpense = (expense?: Partial<Expense>) => {
+        setExpenses([
+            ...expenses,
+            {
+                paid: false, name: '',
+                date: new Date,
+                value: 0,
+                ...expense,
+                id: expenses.length + 1,
+            },
+        ]);
+    };
+
+    const updateExpense = (fieldsToUpdate: Partial<Expense>) => {
+        console.log(fieldsToUpdate.name)
+
+        if (!fieldsToUpdate.id || !getExpense(fieldsToUpdate.id)) {
+            addExpense(fieldsToUpdate)
+            return
+        }
+        const newExpenses = expenses.map(expense => {
+            if (fieldsToUpdate.id === expense.id) {
+                return {
+                    ...expense,
+                    ...fieldsToUpdate,
+                }
+            }
+            return expense;
+        });
+        setExpenses(newExpenses);
+    };
+
+    const removeExpense = (id: number) => {
+        setExpenses(expenses.filter(expense => expense.id !== id))
+    }
+
     const handleAddRow = (ev: React.KeyboardEvent<HTMLInputElement>, expense?: Partial<Expense>) => {
-        if (ev.key === "Enter" || ev.key === "Tab") {
+        if ( ev.key === "Enter" || (!ev.shiftKey && ev.key === "Tab")) {
             ev.preventDefault();
             addExpense(expense);
         }
@@ -34,6 +74,8 @@ export default function MonthComponent({ month, expenses, handleCellChange, addE
         }
     };
 
+
+
     return (
         <div>
             <div tabIndex={0} className="flex cursor-pointer" onClick={toggleOpen} onKeyUp={handleOpen}>
@@ -41,27 +83,32 @@ export default function MonthComponent({ month, expenses, handleCellChange, addE
                 <div>{month}</div>
             </div>
             {open && (
-                <div className="grid grid-cols-[1fr_6fr_2fr_2fr]">
+                <div className="grid grid-cols-[1fr_6fr_2fr_2fr_1fr]">
 
                     <span className="p-1 border-r border-b">Pago</span>
                     <span className="p-1 border-r border-b">Gasto</span>
                     <span className="p-1 border-r border-b text-right">Dia</span>
-                    <span className="p-1 border-b text-right">Valor</span>
+                    <span className="p-1 border-r border-b text-right">Valor</span>
+                    <span className="p-1 border-b text-center">Ações</span>
 
 
-                    {expenses.map(({ id, paid, name, date, value }, idx) => {
+                    {expenses.map((expense, idx) => {
                         const isLastCell = (idx + 1) === expenses.length
+                        const handleDateInput = (day: number) => {
+                            const clampedDay = clamp(day, 1, daysInMonth(expense.date.getFullYear(), expense.date.getMonth()));
+                            return new Date(expense.date.getFullYear(), expense.date.getMonth(), clampedDay)
+                        }
                         return (
-                            <div className="contents" key={id}>
+                            <div className="contents" key={idx}>
                                 <span className="p-1 border-r border-b">
                                     <input
                                         className="w-full"
                                         type="checkbox"
                                         name="paid"
-                                        id={`pago-${id}`}
-                                        checked={paid}
+                                        id={`pago-${expense.id}`}
+                                        checked={expense.paid}
                                         // value={paid ? "true" : "false"}
-                                        onChange={(ev) => handleCellChange(id, "paid", ev)}
+                                        onChange={(ev) => updateExpense({ ...expense, paid: ev.target.checked })}
                                     />
                                 </span>
                                 <span className="p-1 border-r border-b">
@@ -70,20 +117,20 @@ export default function MonthComponent({ month, expenses, handleCellChange, addE
                                         className="w-full"
                                         type="text"
                                         name="name"
-                                        id={`name-${id}`}
-                                        value={name}
-                                        onChange={(ev) => handleCellChange(id, "name", ev)}
+                                        id={`name-${expense.id}`}
+                                        value={expense.name}
+                                        onChange={(ev) => updateExpense({ ...expense, name: ev.target.value })}
                                     />
                                 </span>
                                 <span className="p-1 border-r border-b">
-                                    <time dateTime={getDate(date)} id={`date-${id}`}>
+                                    <time dateTime={getDate(expense.date)} id={`date-${expense.id}`}>
                                         <input
                                             className="text-right w-full"
                                             type="number"
                                             name="day"
-                                            id={`day-${id}`}
-                                            value={date.getDate()}
-                                            onChange={(ev) => handleCellChange(id, "date", ev)}
+                                            id={`day-${expense.id}`}
+                                            value={expense.date.getDate()}
+                                            onChange={(ev) => updateExpense({ ...expense, date: handleDateInput(+ev.target.value) })}
                                         // onKeyDown={(ev) => {
                                         //   if (ev.key === "Enter" && expenses.length <= (idx + 1)) {
                                         //     ev.preventDefault()
@@ -93,16 +140,25 @@ export default function MonthComponent({ month, expenses, handleCellChange, addE
                                         />
                                     </time>
                                 </span>
-                                <span className="p-1 border-b">
+                                <span className="p-1 border-b border-r">
                                     <input
                                         className="text-right w-full"
                                         type="number"
                                         name="value"
-                                        id={`value-${id}`}
-                                        value={value}
-                                        onChange={(ev) => handleCellChange(id, "value", ev)}
-                                        onKeyDown={isLastCell ? (ev) => handleAddRow(ev, { date }) : undefined}
+                                        id={`value-${expense.id}`}
+                                        value={expense.value}
+                                        onChange={(ev) => updateExpense({ ...expense, value: +ev.target.value })}
+                                        inputMode="search"
+                                        onKeyDown={isLastCell ? (ev) => handleAddRow(ev, { date: expense.date }) : undefined}
                                     />
+                                </span>
+                                <span className="p-1 border-b flex justify-center">
+                                    <button
+                                        className="block w-1/2 md:w-1/4"
+                                        onClick={() => removeExpense(expense.id)}
+                                    >
+                                        <TrashBin className="fill-(--font-color) " preserveAspectRatio='none' />
+                                    </button>
                                 </span>
                             </div>
                         )
