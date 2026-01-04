@@ -7,10 +7,15 @@
 
 import { createRoot } from "react-dom/client";
 import { App } from "./frontend/App.tsx";
+import { StrictMode } from 'react';
 
 function start() {
   const root = createRoot(document.getElementById("root")!);
-  root.render(<App />);
+  root.render(
+    <StrictMode>
+      <App />
+    </StrictMode>
+  );
 }
 
 if (document.readyState === "loading") {

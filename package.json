@@ -12,7 +12,9 @@
     "bun-plugin-tailwind": "^0.1.2",
     "react": "^19",
     "react-dom": "^19",
-    "tailwindcss": "^4.1.11"
+    "recharts": "^3.6.0",
+    "tailwindcss": "^4.1.11",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/react": "^19",

@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 import type { Expense } from "./types";
 
 export const generateRandExpenses = (num: number) => {
@@ -6,20 +8,20 @@ export const generateRandExpenses = (num: number) => {
   for (let month = 1; month <= 3; month++) {//const month in months) {
     for (let i = 0; i < num; i++) {
       const date = new Date;
-      date.setMonth(+month);
+      date.setMonth(month);
       date.setDate(date.getDate() + i);
       result.push(
         {
-          id: i,
+          id: uuidv4(),
           paid: Math.random() > .5,
           name: `teste ${months[month]} ${i + 1}`,
+          category: '',
           date,
           value: Number((Math.random() * 100 + Math.random() * 10).toFixed(2))
         }
       );
     }
   }
-
 
   return result;
 };
@@ -28,18 +30,18 @@ export const months = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO
 
 export const getDate = (date: Date) => date.toISOString().slice(0, 10);
 export const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
-export const daysInMonth = (year: number, month: number) => new Date(year, clamp(month+1, 0, 11), 0).getDate();
+export const daysInMonth = (year: number, month: number) => new Date(year, clamp(month + 1, 0, 11), 0).getDate();
 
 const mockExpense = (month: number) => {
   return {
-    id: 0,
+    id: uuidv4(),
     paid: false,
     name: '',
+    category: '',
     date: new Date(2025, month),
     value: 0
   }
 }
-
 
 export const groupExpensesInYear = (expensesToGroup: Expense[]) => {
   const mockMonths: Map<typeof months[number], Expense[]> = new Map(
@@ -68,8 +70,8 @@ export const groupExpensesInYear = (expensesToGroup: Expense[]) => {
 
 export const groupExpensesByMonth = (expenses: Expense[]) => {
   return expenses.reduce((acc, expense) => {
-    const key = months[expense.date.getMonth()]!;
-    const month = (acc.has(key) ? acc.get(key) : acc.set(key, []).get(key))!;
+    const monthKey = months[expense.date.getMonth()]!;
+    const month = (acc.has(monthKey) ? acc.get(monthKey) : acc.set(monthKey, []).get(monthKey))!;
     month.push(expense);
     return acc;
   }, new Map<typeof months[number], Expense[]>);

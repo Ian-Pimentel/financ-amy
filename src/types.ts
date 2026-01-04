@@ -1,7 +1,8 @@
 export type Expense = {
-    id: number;
+    id: string;
     paid: boolean;
     name: string;
+    category: string;
     date: Date;
     value: number;
 };
