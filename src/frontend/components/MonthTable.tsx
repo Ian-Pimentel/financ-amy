@@ -1,66 +1,29 @@
-import { v4 as uuidv4 } from 'uuid'
 import type { Expense } from "@/types"
-import { clamp, daysInMonth, getDate, months } from "@/utils"
+import { clamp, daysInMonth, getDate, MONTHS } from "@/utils"
 import { useState, type SetStateAction } from "react"
-import TrashBin from "./trash_bin";
-import ExpensesPieChart from './expenses_pie_chart';
+import TrashBin from "./TrashbinIcon";
+// import ExpensesPieChart from './ExpensesPieChart';
 
 type MonthProps = {
     month: string;
     expenses: Expense[];
     salary: number;
-    setExpenses: React.Dispatch<SetStateAction<Expense[]>>;
+    categories: string[];
+    addExpense: (expense?: Partial<Expense>) => void;
+    updateExpense: (updatedExpense: Expense) => void;
+    removeExpense: (id: string) => void;
 };
 
 // const currency = <span className='text-(--hint-color)'>R$</span>;
 
-export default function MonthComponent({ month, expenses, salary, setExpenses }: MonthProps) {
-    const [open, setOpen] = useState(month === months[(new Date).getMonth()]);
-    console.log(month, months[(new Date).getMonth()])
+export default function MonthComponent({ month, expenses, salary, categories, addExpense, updateExpense, removeExpense }: MonthProps) {
+    const [open, setOpen] = useState(month === MONTHS[(new Date).getMonth()]);
 
     const expensesTotal = expenses/*.filter(exp => exp.paid)*/.map(exp => exp.value).reduce((prev, curr) => {
         return prev + curr;
     }, 0);
 
-    const getExpense = (id: string) => {
-        return expenses.find(expense => expense.id === id)
-    };
-
-    const addExpense = (expense?: Partial<Expense>) => {
-        setExpenses([
-            ...expenses,
-            {
-                paid: false, name: '',
-                date: new Date,
-                value: 0,
-                ...expense,
-                category: "",
-                id: uuidv4(),
-            },
-        ]);
-    };
-
-    const updateExpense = (fieldsToUpdate: Partial<Expense>) => {
-        // if (!fieldsToUpdate.id || !getExpense(fieldsToUpdate.id)) {
-        //     addExpense(fieldsToUpdate)
-        //     return
-        // }
-
-        const newExpenses = expenses.map(expense => {
-            if (fieldsToUpdate.id === expense.id) {
-                return {
-                    ...expense,
-                    ...fieldsToUpdate,
-                }
-            }
-            return expense;
-        });
-        setExpenses(newExpenses);
-    };
-
-    const removeExpense = (id: string) => {
-        setExpenses(expenses.filter(expense => expense.id !== id))
-    }
+    // console.log(categories)
 
     const handleAddRow = (ev: React.KeyboardEvent<HTMLInputElement>, expense?: Partial<Expense>) => {
         if (ev.key === "Enter" || (!ev.shiftKey && ev.key === "Tab")) {
@@ -87,20 +50,23 @@ export default function MonthComponent({ month, expenses, salary, setExpenses }:
     //     }
     // }
 
+    const moneySaved = salary - expensesTotal;
+
     return (
         <div>
             <div tabIndex={0} className="flex cursor-pointer" onClick={toggleOpen} onKeyUp={handleOpen}>
                 <div className={`${open && "rotate-90"} align-middle`}>{">"}</div>
                 <div className='grow'>{month}</div>
-                <div className="text-right before:content-['R$_'] before:text-(--hint-color)">{(salary - expensesTotal).toFixed(2)}</div>
+                <div className={`${(moneySaved < 0) && 'text-red-400'} text-right before:content-['R$_'] before:text-(--hint-color)`}>{(moneySaved).toFixed(2)}</div>
             </div>
             {open && (
                 <div>
-                    <ExpensesPieChart data={expenses} />
-                    <div className="grid grid-cols-[1fr_6fr_2fr_2fr_1fr]">
-                        <span className="p-1 border-r border-b">Pago</span>
+                    {/* <ExpensesPieChart data={expenses} /> */}
+                    {/* <div className="grid grid-cols-[min-content_6fr_min-content_2fr_min-content]"> */}
+                    <div className="grid grid-cols-[6fr_2fr_min-content]">
+                        {/* <span className="p-1 border-r border-b">Pago</span> */}
                         <span className="p-1 border-r border-b">Gasto</span>
-                        <span className="p-1 border-r border-b text-right">Dia</span>
+                        {/* <span className="p-1 border-r border-b text-right">Dia</span> */}
                         <span className="p-1 border-r border-b text-right">Valor</span>
                         <span className="p-1 border-b text-center">Ações</span>
 
@@ -113,7 +79,7 @@ export default function MonthComponent({ month, expenses, salary, setExpenses }:
                             }
                             return (
                                 <div className="contents" key={idx}>
-                                    <span className="p-1 border-r border-b">
+                                    {/* <span className="p-1 border-r border-b">
                                         <input
                                             className="w-full h-full"
                                             type="checkbox"
@@ -123,7 +89,7 @@ export default function MonthComponent({ month, expenses, salary, setExpenses }:
                                             // value={paid ? "true" : "false"}
                                             onChange={(ev) => updateExpense({ ...expense, paid: ev.target.checked })}
                                         />
-                                    </span>
+                                    </span> */}
                                     <div className="flex p-1 border-r border-b">
                                         <input
                                             className="w-full h-full"
@@ -137,22 +103,26 @@ export default function MonthComponent({ month, expenses, salary, setExpenses }:
                                             onChange={(ev) => updateExpense({ ...expense, name: ev.target.value })}
                                         />
                                         <span className="w-full h-full flex before:content-['#']">
+                                            <input
+                                                className="w-full h-full placeholder:text-(--hint-color)"
 
-                                        <input
-                                            className="w-full h-full"
-                                            
-                                            type="text"
-                                            name="category"
-                                            placeholder="Digite a categoria do gasto"
-                                            list="expense-catogries"
-                                            id={`category-${expense.id}`}
-                                            value={expense.category}
-                                            // onKeyDown={handleRemoveRow}
-                                            onChange={(ev) => updateExpense({ ...expense, category: ev.target.value.toUpperCase() })}
-                                        />
+                                                type="text"
+                                                name="category"
+                                                placeholder="Categoria"
+                                                list={`categories-${expense.id}`}
+                                                id={`category-${expense.id}`}
+                                                value={expense.category}
+                                                // onKeyDown={handleRemoveRow}
+                                                onChange={(ev) => updateExpense({ ...expense, category: ev.target.value.toUpperCase() })}
+                                            />
+                                            {categories.length ? (
+                                                <datalist id={`categories-${expense.id}`}>
+                                                    {categories.map((categ, idx) => <option key={`category-${expense.id}-${idx}`} value={categ} />)}
+                                                </datalist>
+                                            ) : null}
                                         </span>
                                     </div>
-                                    <span className="p-1 border-r border-b">
+                                    {/* <span className="p-1 border-r border-b">
                                         <time dateTime={getDate(expense.date)} id={`date-${expense.id}`}>
                                             <input
                                                 className="text-right w-full h-full"
@@ -169,7 +139,7 @@ export default function MonthComponent({ month, expenses, salary, setExpenses }:
                                             // }}
                                             />
                                         </time>
-                                    </span>
+                                    </span> */}
                                     <span className="p-1 border-b border-r flex before:content-['R$_'] before:text-(--hint-color)">
                                         <input
                                             className="text-right w-full h-full"
@@ -184,7 +154,7 @@ export default function MonthComponent({ month, expenses, salary, setExpenses }:
                                     </span>
                                     <span className="p-1 border-b flex justify-center">
                                         <button
-                                            className="block w-1/2 md:w-1/4 lg:w-1/5"
+                                            className="block w-1/2 cursor-pointer"
                                             onClick={() => removeExpense(expense.id)}
                                         >
                                             <TrashBin className="fill-(--font-color)" />
@@ -193,9 +163,10 @@ export default function MonthComponent({ month, expenses, salary, setExpenses }:
                                 </div>
                             )
                         })}
-                        <span className="p-1 col-span-3 border-r text-right">Total</span>
-                        <span className="p-1 text-right col-span-2 flex justify-start gap-1">
-                            <span className="before:content-['R$_'] before:text-(--hint-color)">{expensesTotal.toFixed(2)}</span>
+                        {/* <span className="p-1 col-span-3 border-r text-right">Total</span> */}
+                        <span className="p-1 border-r text-right">Total</span>
+                        <span className="p-1 flex before:content-['R$_'] before:text-(--hint-color)">
+                            <span className="text-right w-full inline-block">{expensesTotal.toFixed(2)}</span>
                         </span>
                     </div>
                 </div>

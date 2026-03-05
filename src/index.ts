@@ -5,6 +5,7 @@ const server = serve({
   routes: {
     // Serve index.html for all unmatched routes.
     "/*": index,
+    // "/json": () => new Response(file('data_structure.json'))
   },
 
   development: process.env.NODE_ENV !== "production" && {

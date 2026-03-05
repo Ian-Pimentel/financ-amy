@@ -1,5 +1,5 @@
 export type Expense = {
-    id: string;
+    readonly id: string;
     paid: boolean;
     name: string;
     category: string;

@@ -10,10 +10,15 @@
 @layer base {
   :root {
     --font-color: rgb(243, 237, 219);
-    --hint-color: rgba(243, 237, 219, 0.459);
+    --hint-color: rgb(from var(--font-color) r g b / calc(alpha * 0.5));;
 
     --bg-color: rgb(36,36,36);
+
     @apply text-(--font-color) bg-(--bg-color) font-sans;
+  }
+
+  dialog[open] {
+    margin: auto;
   }
 
   body {

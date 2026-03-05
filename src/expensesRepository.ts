@@ -2,7 +2,7 @@ import type { Expense } from "./types"
 
 const KEYNAME = 'expenses';
 
-export const saveExpenses = (expenses: Expense[], year: number) => {
+export const persistExpenses = (expenses: Expense[], year: number) => {
     localStorage.setItem(`${KEYNAME}_${year}`, JSON.stringify(expenses))
 };
 
@@ -16,4 +16,13 @@ export const getExpenses = (year: number) => {
             date: new Date(expense.date)
         }
     })
+};
+
+export const persistSalary = (salary: number) => {
+    localStorage.setItem('salary', salary.toFixed(2))
+};
+
+export const getSalary = () => {
+  const salary = Number(localStorage.getItem('salary'));
+  return (isNaN(salary) || salary <= 0) ? 0 : salary;
 };

@@ -11,11 +11,14 @@ import { StrictMode } from 'react';
 
 function start() {
   const root = createRoot(document.getElementById("root")!);
-  root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>
-  );
+
+  if (process.env.NODE_ENV === 'development') {
+    root.render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    );
+  } else root.render(<App />);
 }
 
 if (document.readyState === "loading") {

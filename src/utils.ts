@@ -14,7 +14,7 @@ export const generateRandExpenses = (num: number) => {
         {
           id: uuidv4(),
           paid: Math.random() > .5,
-          name: `teste ${months[month]} ${i + 1}`,
+          name: `teste ${MONTHS[month]} ${i + 1}`,
           category: '',
           date,
           value: Number((Math.random() * 100 + Math.random() * 10).toFixed(2))
@@ -26,7 +26,7 @@ export const generateRandExpenses = (num: number) => {
   return result;
 };
 
-export const months = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"] as const;
+export const MONTHS = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"] as const;
 
 export const getDate = (date: Date) => date.toISOString().slice(0, 10);
 export const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
@@ -44,7 +44,8 @@ const mockExpense = (month: number) => {
 }
 
 export const groupExpensesInYear = (expensesToGroup: Expense[]) => {
-  const mockMonths: Map<typeof months[number], Expense[]> = new Map(
+  // esses mocks eram pra estar lá no react como opção quando não tiver registro
+  const mockMonths: Map<typeof MONTHS[number], Expense[]> = new Map(
     [
       ['JANEIRO', [mockExpense(0)]],
       ['FEVEREIRO', [mockExpense(1)]],
@@ -68,11 +69,19 @@ export const groupExpensesInYear = (expensesToGroup: Expense[]) => {
   return mockMonths
 };
 
-export const groupExpensesByMonth = (expenses: Expense[]) => {
-  return expenses.reduce((acc, expense) => {
-    const monthKey = months[expense.date.getMonth()]!;
+export const groupExpensesByMonth = (expenses: Expense[], initMap?: Map<typeof MONTHS[number], Expense[]>) => {
+  return expenses.reduce<Map<typeof MONTHS[number], Expense[]>>((acc, expense) => {
+    const monthKey = MONTHS[expense.date.getMonth()]!;
+    //get ou init no mês->array
     const month = (acc.has(monthKey) ? acc.get(monthKey) : acc.set(monthKey, []).get(monthKey))!;
     month.push(expense);
     return acc;
-  }, new Map<typeof months[number], Expense[]>);
+  }, initMap ?? new Map);
 };
+
+export const getCategories = (expenses: Expense[]) => {
+  return Array.from(expenses.reduce<Set<string>>((acc, exp) => {
+    if (exp.category) acc.add(exp.category)
+    return acc
+  }, new Set()))
+}

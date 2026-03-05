@@ -1,0 +1,160 @@
+{
+    "expenses_2026": [
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 1,
+                    "paid": true,
+                    "name": "test 1",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-01-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 2,
+                    "paid": true,
+                    "name": "test 2",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-02-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 3,
+                    "paid": true,
+                    "name": "test 3",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-03-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 4,
+                    "paid": true,
+                    "name": "test 4",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-04-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 5,
+                    "paid": true,
+                    "name": "test 5",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-05-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 6,
+                    "paid": true,
+                    "name": "test 6",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-06-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 7,
+                    "paid": true,
+                    "name": "test 7",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-07-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 8,
+                    "paid": true,
+                    "name": "test 8",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-08-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 9,
+                    "paid": true,
+                    "name": "test 9",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-09-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 10,
+                    "paid": true,
+                    "name": "test 10",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-10-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 11,
+                    "paid": true,
+                    "name": "test 11",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-11-01"
+                }
+            ]
+        },    
+        {
+            "anotations": "bla bla bla",
+            "expenses": [
+                {
+                    "id": 12,
+                    "paid": true,
+                    "name": "test 12",
+                    "value": 10.0,
+                    "category": "",
+                    "date": "2026-12-01"
+                }
+            ]
+        }    
+    ]
+}
